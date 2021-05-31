@@ -1,0 +1,45 @@
+
+package serialcommarduino;
+import com.fazecast.jSerialComm.SerialPort;
+import java.awt.FlowLayout;
+import java.awt.TextArea;
+import java.util.Scanner;
+import javax.swing.JFrame;
+public class SerialCommArduino extends JFrame{
+
+    public static void main(String[] args) {
+        JFrame pencere = new JFrame("Java Menu ");
+        pencere.setLayout(new FlowLayout());
+        pencere.setTitle("Pot-Degeri");
+        pencere.setSize(250,300);
+        pencere.setLocationRelativeTo(null);
+        pencere.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pencere.setVisible(true);
+        TextArea a = new TextArea(30,30);
+        
+        pencere.add(a);
+       
+        SerialPort ports[]=SerialPort.getCommPorts();
+       int i=0;
+       for(SerialPort port:ports){
+           System.out.println(+i++ +"."+port.getSystemPortName());
+       }
+       System.out.print("Lütfen bir port seçiniz:");
+       Scanner scan=new Scanner(System.in);
+       int selectport=scan.nextInt();
+       SerialPort port=ports[selectport];
+       port.setBaudRate(9600);
+       if(port.openPort()){
+           System.out.println("Baðlantý Baþarýlý");
+       }
+       else{
+           System.out.print("Baðlantý Baþarýsýz");
+       }
+       port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING,10000,0);
+       Scanner data=new Scanner(port.getInputStream());
+       while(data.hasNextLine()){
+           a.setText(a.getText()+data.nextLine()+"\n");
+       }
+    }
+    
+}
